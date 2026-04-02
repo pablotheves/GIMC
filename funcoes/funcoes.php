@@ -7,6 +7,10 @@ include "../banco_de_dados/funcoes_bd.php";
 
 //Qual o IMC de cada participante?
 
+function calcularImc(float $peso, float $altura): float
+{
+    return round($peso / ($altura * $altura), 2);
+}
 
 function listarImcs(mysqli $conexao): void
 {
@@ -18,10 +22,10 @@ function listarImcs(mysqli $conexao): void
         echo "Nome - Sobrenome - IMC<br>";
 
         while ($registro = mysqli_fetch_array($retornoBanco)) {
-            echo $registro['idpessoa'] .
-                " " . $registro['nome'] .
+            $imc = calcularImc($registro['peso'], $registro['altura']);
+            echo " " . $registro['nome'] .
                 " " . $registro['sobrenome'] .
-                " " . $registro['peso/altura'] ."<br>";
+                " " . $imc . "<br>";
         }
     } else {
         echo "Nenhum resultado.";

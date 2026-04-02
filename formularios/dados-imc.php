@@ -1,6 +1,6 @@
 <?php
 
-include "../banco_de_dados/funcoes_bd.php";
+include_once "../funcoes/funcoes.php";
 
 $auxConectar = conectar();
 
