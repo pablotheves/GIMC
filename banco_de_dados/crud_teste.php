@@ -11,7 +11,7 @@ mostrarPessoas($auxConectar);
 $retornoInserir=inserirPessoa($auxConectar,"Tiago","Gonçalves",20,70,68);
 
 if($retornoInserir){
-    echo 'carro inserido';
+    echo 'Pessoa inserida';
 }
 else{
     echo "não foi possivel inserir";

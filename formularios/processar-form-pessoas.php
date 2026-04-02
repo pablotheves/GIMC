@@ -6,6 +6,16 @@ $IdadeRecebido = $_POST['containerIdade'];
 $PesoRecebido = $_POST['containerPeso'];
 $AlturaRecebido = $_POST['containerAltura'];
 
+$auxConectar = conectar();
+
+$retornoInserir=inserirPessoa($auxConectar,"containerNome","containerSobrenome",containerIdade,containerPeso,containerAltura);
+if($retornoInserir){
+    echo 'Pessoa inserida';
+}
+else{
+    echo "Não foi possivel inserir";
+}
+
 ?>
 
 <!DOCTYPE html>
