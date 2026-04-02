@@ -6,9 +6,9 @@ $auxConectar = conectar();
 
 mostrarPessoas($auxConectar);
 
-mysqli $conexao, string $nome, string $sobrenome, int $idade, double $peso, double $altura
+//mysqli $conexao, string $nome, string $sobrenome, int $idade, double $peso, double $altura
 
-$retornoInserir=inserirPessoa($auxConectar,"Tiago","Gonçalves",20,70.0,1.68);
+$retornoInserir=inserirPessoa($auxConectar,"Tiago","Gonçalves",20,70,68);
 
 if($retornoInserir){
     echo 'carro inserido';
@@ -19,13 +19,14 @@ else{
 
 mostrarPessoas($auxConectar);
 
-$excluirPessoa = $excluirPessoa($auxConectar,1);
+$excluirPessoa = excluirPessoa($auxConectar,1);
 
-if($excluirCarro){
-    echo 'carro excluido';
+if($excluirPessoa){
+    echo 'pessoa excluido';
 }
 else{
     echo "não foi possivel excluir";
 }
 mostrarPessoas($auxConectar);
 
+    

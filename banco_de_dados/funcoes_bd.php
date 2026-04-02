@@ -43,16 +43,16 @@ function mostrarPessoas(mysqli $conexao): void
     return;
 }
 
-function inserirPessoa(mysqli $conexao, string $nome, string $sobrenome, int $idade, double $peso, double $altura): bool
+function inserirPessoa(mysqli $conexao, string $nome, string $sobrenome, int $idade, float $peso, float $altura): bool
 {
     $comandoSQL = "insert into pessoas (nome,sobrenome,idade,peso,altura) values ('$nome','$sobrenome',$idade,$peso,$altura)";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
     return $retornoBanco;
 }
 
-function excluirCarro(mysqli $conexao, int $idpessoa): bool
+function excluirPessoa(mysqli $conexao, int $idpessoa): bool
 {
-    $comandoSQL = "delete from carros where idpessoa = '$idpessoa'";
+    $comandoSQL = "delete from pessoas where idpessoa = '$idpessoa'";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
     return $retornoBanco;
 }
