@@ -1,5 +1,6 @@
 <?php
 
+include "../banco_de_dados/funcoes_bd.php";
 
 
 //Dados IMC
