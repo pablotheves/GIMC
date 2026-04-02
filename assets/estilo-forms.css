@@ -1,21 +1,14 @@
 body {
-    background-color: #ffffff; /* Cinza claro do fundo */
+    background-color: #f2f2f2;
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
     padding: 0;
 }
 
-/* Cabeçalho */
-h1 {
+header h1 {
     font-weight: normal;
     margin-top: 20px;
-}
-
-.titulo-vermelho {
-    color: #a00000;
-    font-size: 1.5rem;
-    margin-bottom: 20px;
 }
 
 hr {
@@ -23,69 +16,35 @@ hr {
     border-top: 1px solid #999;
 }
 
-/* Caixa Teal (Verde Petróleo) */
-.caixa-destaque {
-    background-color: #134e5e;
-    color: white;
-    display: inline-block;
-    padding: 10px 40px;
-    font-size: 1.3rem;
-    font-weight: bold;
-    border: 2px solid #000;
-    margin-top: 15px;
-}
-
-/* Layout do Formulário */
-.form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 15px;
-    max-width: 400px;
-    margin: 20px auto;
-    align-items: center;
-}
-
-.form-grid label {
-    text-align: right; /* Alinha labels à direita */
-    font-size: 1.1rem;
-}
-
-.form-grid input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #000;
-    box-sizing: border-box;
-}
-
-/* Área do Botão */
-.button-area {
-    grid-column: span 2; /* Faz o botão ocupar as duas colunas */
+/* Container para centralizar os botões */
+.container-painel {
     display: flex;
-    justify-content: center;
-    margin-top: 10px;
+    flex-direction: column; /* Alinha um embaixo do outro */
+    align-items: center;
+    gap: 20px; /* Espaço entre os botões */
+    margin-top: 40px;
+    margin-bottom: 40px;
 }
 
-.btn-registrar {
-    background-color: #9900ff; /* Roxo vibrante */
+/* Estilização dos Botões (Links) */
+.btn-menu {
+    background-color: #134e5e; /* Verde petróleo da imagem */
     color: white;
-    border: 1px solid #000;
-    padding: 10px 50px;
-    font-size: 1.2rem;
+    text-decoration: none; /* Remove o sublinhado do link */
+    font-size: 1.5rem;
     font-weight: bold;
-    cursor: pointer;
-    box-shadow: 2px 2px 0px #000;
+    padding: 15px;
+    width: 400px; /* Largura fixa para ficarem iguais */
+    border: 2px solid #000;
+    box-sizing: border-box;
+    transition: background 0.3s;
 }
 
-.btn-registrar:active {
-    box-shadow: none;
-    transform: translate(1px, 1px);
+.btn-menu:hover {
+    background-color: #1a6b81; /* Fica um pouco mais claro ao passar o mouse */
 }
 
-/* Rodapé */
-footer {
-    margin-top: 50px;
-}
-
+/* Rodapé igual ao anterior */
 .rodape-conteudo {
     background-color: #e6e6e6;
     padding: 40px;

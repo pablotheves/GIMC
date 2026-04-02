@@ -1,5 +1,7 @@
 <?php
 
+include "../banco_de_dados/funcoes_bd.php";
+
 $nomeRecebido = $_POST['containerNome'];
 $SobrenomeRecebido = $_POST['containerSobrenome'];
 $IdadeRecebido = $_POST['containerIdade'];
@@ -8,7 +10,7 @@ $AlturaRecebido = $_POST['containerAltura'];
 
 $auxConectar = conectar();
 
-$retornoInserir=inserirPessoa($auxConectar,"containerNome","containerSobrenome",containerIdade,containerPeso,containerAltura);
+$retornoInserir=inserirPessoa($auxConectar,$nomeRecebido,$SobrenomeRecebido,$IdadeRecebido,$PesoRecebido,$AlturaRecebido);
 if($retornoInserir){
     echo 'Pessoa inserida';
 }
@@ -30,12 +32,9 @@ else{
 <main class="container">
 
     <body class="form-grid">
-        <h3>Dados da Pessoa</h3>
-        <p><strong>Nome:</strong> <?php echo $nomeRecebido; ?></p>
-        <p><strong>Sobrenome:</strong> <?php echo $SobrenomeRecebido; ?></p>
-        <p><strong>Idade:</strong> <?php echo $IdadeRecebido; ?></p>
-        <p><strong>Peso:</strong> <?php echo $PesoRecebido; ?></p>
-        <p><strong>Altura:</strong> <?php echo $AlturaRecebido; ?></p>
+        <h3>Pessoa registrada com sucesso!</h3>
+        <a href="formulario-inserir-pessoas.html" class="btn-registrar">Voltar</a>
+        
     </body>
 
 </main>
