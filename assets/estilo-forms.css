@@ -1,5 +1,4 @@
 body {
-    background-color: #f2f2f2;
     font-family: Arial, sans-serif;
     text-align: center;
     margin: 0;
@@ -19,29 +18,35 @@ hr {
 /* Container para centralizar os botões */
 .container-painel {
     display: flex;
-    flex-direction: column; /* Alinha um embaixo do outro */
+    flex-direction: column;
+    /* Alinha um embaixo do outro */
     align-items: center;
-    gap: 20px; /* Espaço entre os botões */
+    gap: 20px;
+    /* Espaço entre os botões */
     margin-top: 40px;
     margin-bottom: 40px;
 }
 
 /* Estilização dos Botões (Links) */
 .btn-menu {
-    background-color: #134e5e; /* Verde petróleo da imagem */
+    background-color: #134e5e;
+    /* Verde petróleo da imagem */
     color: white;
-    text-decoration: none; /* Remove o sublinhado do link */
+    text-decoration: none;
+    /* Remove o sublinhado do link */
     font-size: 1.5rem;
     font-weight: bold;
     padding: 15px;
-    width: 400px; /* Largura fixa para ficarem iguais */
+    width: 400px;
+    /* Largura fixa para ficarem iguais */
     border: 2px solid #000;
     box-sizing: border-box;
     transition: background 0.3s;
 }
 
 .btn-menu:hover {
-    background-color: #1a6b81; /* Fica um pouco mais claro ao passar o mouse */
+    background-color: #1a6b81;
+    /* Fica um pouco mais claro ao passar o mouse */
 }
 
 /* Rodapé igual ao anterior */
@@ -49,4 +54,36 @@ hr {
     background-color: #e6e6e6;
     padding: 40px;
     font-size: 1.1rem;
+}
+
+table {
+    width: 80%;
+    border-collapse: collapse;
+    margin: 20px auto;
+    font-family: Arial;
+
+}
+
+td {
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #eee;
+    border: 1px solid #ddd;
+}
+
+.cuidado{
+    color: orange;
+    font-weight: bold;
+}
+.alerta {
+    color: red;
+    font-weight: bold;
+}
+
+.normal {
+    color: green;
 }
