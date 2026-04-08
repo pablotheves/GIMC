@@ -90,7 +90,6 @@ function listarPessoas(mysqli $conexao): void
 
                 while ($registro = mysqli_fetch_array($retornoBanco)):
                     ?>
-
                     <tr>
                         <td><?= $registro['nome'] ?></td>
                         <td><?= $registro['sobrenome'] ?></td>
@@ -107,7 +106,6 @@ function listarPessoas(mysqli $conexao): void
                             </a>
                         </td>
                     </tr>
-
                     <?php
 
                 endwhile; ?>
