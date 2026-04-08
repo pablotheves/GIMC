@@ -1,6 +1,6 @@
 <?php
 
-include "../banco_de_dados/funcoes_bd.php";
+include "../funcoes/funcoes.php";
 
 $nomeRecebido = $_POST['containerNome'];
 $SobrenomeRecebido = $_POST['containerSobrenome'];
