@@ -77,18 +77,14 @@ function listarPessoas(mysqli $conexao): void
             </tr>
         </thead>
         <tbody>
-            <?php while ($registro = mysqli_fetch_array($retornoBanco)): 
-                // Pequeno bloco PHP apenas para o cálculo
-                $imc = calcularImc($registro['peso'], $registro['altura']);
-            ?>
+            <?php 
+            while ($registro = mysqli_fetch_array($retornoBanco)): ?>
                 
                 <tr>
                     <td><?= $registro['nome'] ?></td>
                     <td><?= $registro['sobrenome'] ?></td>
                     <td><?= $registro['peso'] ?> kg</td>
                     <td><?= $registro['altura'] ?> m</td>
-                    <td><?= <a href="Excluir"></a> ?></td>
-                    <td><?= $imc ?></td>
                 </tr>
 
             <?php endwhile; ?>
@@ -143,6 +139,7 @@ function listarImcs(mysqli $conexao): void
             </tr>
         </thead>
         <tbody>
+            //comentario aqui
             <?php while ($registro = mysqli_fetch_array($retornoBanco)): 
                 // Pequeno bloco PHP apenas para o cálculo
                 $imc = calcularImc($registro['peso'], $registro['altura']);

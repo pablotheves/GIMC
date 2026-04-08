@@ -19,27 +19,16 @@
 <body>
     <main class="container-painel"> 
         <h2>Lista dos participantes</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Sobrenome</th>
-                    <th>Peso</th>
-                    <th>Altura</th>
-                </tr>
-            </thead>
             <?php
             while ($registro = mysqli_fetch_assoc($resultado)) {
-                
+                $dadosListados = listarPessoas($auxConectar);
+
                 echo "<tr>";
-                echo "<td>" . $registro['nome'] . " " . $registro['sobrenome'] . "</td>";
-                echo "<td class='" . $classeCss . "</td>";
+                echo "<td>" . $dadosListados['nome'] . " " . $dadosListados['sobrenome'] . "</td>";
                 echo "</tr>";
             }
             ?>
         </table>
-        <?php mostrarPessoas(conectar()); ?>
-
     </main>
 </body>
 </html>
