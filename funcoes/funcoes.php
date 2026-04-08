@@ -58,6 +58,12 @@ function excluirPessoa(mysqli $conexao, int $idpessoa): bool
     return $retornoBanco;
 }
 
+
+if (isset($_GET['acao']) && $_GET['acao'] == 'excluir') {
+    $id = $_GET['id'];
+    excluirPessoa($conexao, $id);
+}
+
 function listarPessoas(mysqli $conexao): void
 {
 
@@ -85,8 +91,9 @@ function listarPessoas(mysqli $conexao): void
                     <td><?= $registro['sobrenome'] ?></td>
                     <td><?= $registro['peso'] ?> kg</td>
                     <td><?= $registro['altura'] ?> m</td>
+                    <td><a href="?acao=excluir&id=<?= $registro['id'] ?>">Excluir</a></td>
                 </tr>
-
+                
             <?php endwhile; ?>
         </tbody>
     </table>
