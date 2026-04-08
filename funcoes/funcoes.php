@@ -59,50 +59,65 @@ function excluirPessoa(mysqli $conexao, int $idpessoa): bool
 }
 
 
-if (isset($_GET['acao']) && $_GET['acao'] == 'excluir') {
-    $id = $_GET['id'];
-    excluirPessoa($conexao, $id);
-}
+
 
 function listarPessoas(mysqli $conexao): void
 {
+
+    if (isset($_GET['acao']) && $_GET['acao'] == 'excluir') {
+        $id = $_GET['id'];
+        excluirPessoa($conexao, $id);
+    }
+
 
     $comandoSQL = "SELECT * from pessoas";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
 
     if (mysqli_num_rows($retornoBanco) > 0): ?>
         <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Sobrenome</th>
-                <th>Peso</th>
-                <th>Altura</th>
-                <th>Excluir</th>
-                <th>Editar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php 
-            while ($registro = mysqli_fetch_array($retornoBanco)): ?>
-                
+            <thead>
                 <tr>
-                    <td><?= $registro['nome'] ?></td>
-                    <td><?= $registro['sobrenome'] ?></td>
-                    <td><?= $registro['peso'] ?> kg</td>
-                    <td><?= $registro['altura'] ?> m</td>
-                    <td><a href="?acao=excluir&id=<?= $registro['id'] ?>">Excluir</a></td>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Peso</th>
+                    <th>Altura</th>
+                    <th>Excluir</th>
+                    <th>Editar</th>
                 </tr>
+            </thead>
+            <tbody>
+                <?php
+
+                while ($registro = mysqli_fetch_array($retornoBanco)):
+                    ?>
+
+                    <tr>
+                        <td><?= $registro['nome'] ?></td>
+                        <td><?= $registro['sobrenome'] ?></td>
+                        <td><?= $registro['peso'] ?> kg</td>
+                        <td><?= $registro['altura'] ?> m</td>
+                        <td>
+                            <a href="?acao=excluir&id=<?= $registro['idpessoa'] ?>"]
+                            onclick="return confirm('Tem certeza que deseja excluir esta pessoa?')">
+                            Excluir </a>
+                        </td>
+                        <td>
+                            <a href="alterar-dados.php?id=<?= $registro['idpessoa'] ?>">
+                                Editar
+                            </a>
+                        </td>
+                    </tr>
+
+                    <?php
+
+                endwhile; ?>
                 
-            <?php endwhile; ?>
-        </tbody>
-    </table>
-
-    
-
-<?php else: ?>
-    <p>Nenhum resultado encontrado.</p>
-<?php endif; 
+            </tbody>
+        </table>
+        
+    <?php else: ?>
+        <p>Nenhum resultado encontrado.</p>
+    <?php endif;
 }
 
 
@@ -136,39 +151,39 @@ function listarImcs(mysqli $conexao): void
 
     if (mysqli_num_rows($retornoBanco) > 0): ?>
         <table>
-        <thead>
-            <tr>
-                <th>Nome</th>
-                <th>Sobrenome</th>
-                <th>Peso</th>
-                <th>Altura</th>
-                <th>IMC</th>
-            </tr>
-        </thead>
-        <tbody>
-            //comentario aqui
-            <?php while ($registro = mysqli_fetch_array($retornoBanco)): 
-                // Pequeno bloco PHP apenas para o cálculo
-                $imc = calcularImc($registro['peso'], $registro['altura']);
-            ?>
-                
+            <thead>
                 <tr>
-                    <td><?= $registro['nome'] ?></td>
-                    <td><?= $registro['sobrenome'] ?></td>
-                    <td><?= $registro['peso'] ?> kg</td>
-                    <td><?= $registro['altura'] ?> m</td>
-                    <td><?= $imc ?></td>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Peso</th>
+                    <th>Altura</th>
+                    <th>IMC</th>
                 </tr>
+            </thead>
+            <tbody>
+                //comentario aqui
+                <?php while ($registro = mysqli_fetch_array($retornoBanco)):
+                    // Pequeno bloco PHP apenas para o cálculo
+                    $imc = calcularImc($registro['peso'], $registro['altura']);
+                    ?>
 
-            <?php endwhile; ?>
-        </tbody>
-    </table>
+                    <tr>
+                        <td><?= $registro['nome'] ?></td>
+                        <td><?= $registro['sobrenome'] ?></td>
+                        <td><?= $registro['peso'] ?> kg</td>
+                        <td><?= $registro['altura'] ?> m</td>
+                        <td><?= $imc ?></td>
+                    </tr>
 
-    
+                <?php endwhile; ?>
+            </tbody>
+        </table>
 
-<?php else: ?>
-    <p>Nenhum resultado encontrado.</p>
-<?php endif; 
+
+
+    <?php else: ?>
+        <p>Nenhum resultado encontrado.</p>
+    <?php endif;
 }
 
 
@@ -197,32 +212,32 @@ $classeCss = "";
 function classificarGrauObesidade(float $imc): array
 {
     if ($imc < 18.5) {
-        return[
+        return [
             "texto" => "Abaixo do peso",
             "classeCss" => "alerta"
         ];
     } elseif ($imc >= 18.5 && $imc < 25) {
-        return[
+        return [
             "texto" => "Peso normal",
             "classeCss" => "normal"
         ];
     } elseif ($imc >= 25 && $imc < 30) {
-        return[
+        return [
             "texto" => "Sobrepeso",
             "classeCss" => "cuidado"
         ];
     } elseif ($imc >= 30 && $imc < 35) {
-        return[
+        return [
             "texto" => "Obesidade grau I",
             "classeCss" => "alerta"
         ];
     } elseif ($imc >= 35 && $imc < 40) {
-        return[
+        return [
             "texto" => "Obesidade grau II",
             "classeCss" => "alerta"
         ];
     } else {
-        return[
+        return [
             "texto" => "Obesidade grau III (mórbida)",
             "classeCss" => "alerta"
         ];
@@ -230,5 +245,3 @@ function classificarGrauObesidade(float $imc): array
 }
 
 ?>
-
-
