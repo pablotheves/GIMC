@@ -1,6 +1,11 @@
 <?php
 
     include_once "../funcoes/funcoes.php";
+        
+    $auxConectar = conectar();
+
+    $sql = "SELECT * FROM pessoas";
+    $resultado = mysqli_query($auxConectar, $sql);
 ?>
 
 <!DOCTYPE html>
@@ -23,6 +28,15 @@
                     <th>Altura</th>
                 </tr>
             </thead>
+            <?php
+            while ($registro = mysqli_fetch_assoc($resultado)) {
+                
+                echo "<tr>";
+                echo "<td>" . $registro['nome'] . " " . $registro['sobrenome'] . "</td>";
+                echo "<td class='" . $classeCss . "</td>";
+                echo "</tr>";
+            }
+            ?>
         </table>
         <?php mostrarPessoas(conectar()); ?>
 
