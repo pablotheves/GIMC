@@ -1,6 +1,5 @@
 <?php
 
-
 //banco de dados
 function conectar(): mysqli
 {
