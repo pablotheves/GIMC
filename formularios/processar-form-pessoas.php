@@ -12,13 +12,6 @@ $AlturaRecebido = $_POST['containerAltura'];
 
 $auxConectar = conectar();
 
-/*$retornoInserir=inserirPessoa($auxConectar,$nomeRecebido,$SobrenomeRecebido,$IdadeRecebido,$PesoRecebido,$AlturaRecebido);
-if($retornoInserir){
-    echo 'Pessoa inserida';
-}
-else{
-    echo "Não foi possivel inserir";
-}*/
 
 if ($id) {
     // UPDATE
@@ -34,6 +27,14 @@ if ($id) {
 
     if ($retorno) {
         echo 'Pessoa atualizada com sucesso';
+
+        // LOG 
+    $mensagem = "ATUALIZOU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
+                . date("d/m/Y H:i:s") . "\n";
+
+    file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
+
+    
     } else {
         echo 'Erro ao atualizar';
     }

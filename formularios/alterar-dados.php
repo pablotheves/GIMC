@@ -56,7 +56,7 @@
 
             <label for="idade">Idade:</label>
             <input type="number" id="idade" name="containerIdade"
-                value="<?= $pessoa['idade'] ?? '' ?>" required> required>
+                value="<?= $pessoa['idade'] ?? '' ?>" required>
             <br>
 
             <label for="peso">Peso:</label>
@@ -71,6 +71,7 @@
             
             <div class="button-area">
                 <button type="submit" class="btn-alterar">Alterar</button>
+                
             </div>
         </form>
     </main>

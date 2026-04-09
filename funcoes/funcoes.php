@@ -49,6 +49,15 @@ function inserirPessoa(mysqli $conexao, string $nome, string $sobrenome, int $id
     $comandoSQL = "insert into pessoas (nome,sobrenome,idade,peso,altura) values ('$nome','$sobrenome',$idade,$peso,$altura)";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
     return $retornoBanco;
+
+    // LOG 
+    $mensagem = "INSERIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
+                . date("d/m/Y H:i:s") . "\n";
+
+    file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
+
+
+    
 }
 
 function excluirPessoa(mysqli $conexao, int $idpessoa): bool
@@ -56,9 +65,14 @@ function excluirPessoa(mysqli $conexao, int $idpessoa): bool
     $comandoSQL = "delete from pessoas where idpessoa = '$idpessoa'";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
     return $retornoBanco;
+
+
+    // LOG direto 
+    $mensagem = "EXCLUIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
+                . date("d/m/Y H:i:s") . "\n";
+
+    file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
 }
-
-
 
 
 function listarPessoas(mysqli $conexao): void
