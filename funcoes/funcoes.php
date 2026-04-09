@@ -158,9 +158,7 @@ function listarImcs(mysqli $conexao): void
                 </tr>
             </thead>
             <tbody>
-                //comentario aqui
                 <?php while ($registro = mysqli_fetch_array($retornoBanco)):
-                    // Pequeno bloco PHP apenas para o cálculo
                     $imc = calcularImc($registro['peso'], $registro['altura']);
                     ?>
 
@@ -383,4 +381,190 @@ function acimaIdadeMedia(mysqli $conexao): void
         echo "<p>Nenhum participante encontrado para calcular a idade média.</p>";
     }
 }
-?>
+
+function abaixoIdadeMedia(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade FROM pessoas";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    $pessoas = [];
+    $somaIdades = 0;
+
+    // Armazenamos todos os dados da pessoa, não apenas a idade
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+        $pessoas[] = $registro;
+        $somaIdades += $registro['idade'];
+    }
+
+    $totalPessoas = count($pessoas);
+    echo "<p>total de pessoas abaixo: <strong>" . $totalPessoas . "</strong>.</p>";
+
+}
+
+function nomesEIMC3MaioresIdades(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas ORDER BY idade DESC LIMIT 3";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        while ($registro = mysqli_fetch_assoc($resultado)) {
+            $imc = calcularImc($registro['peso'], $registro['altura']);
+            echo "<p>" . $registro['nome'] . " " . $registro['sobrenome'] . " - IMC: <strong>" . $imc . "</strong></p>";
+        }
+    } else {
+        echo "<p>Nenhuma pessoa encontrada.</p>";
+    }
+}
+
+function nomesEIMC5MenoresIdades(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas ORDER BY idade ASC LIMIT 5";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        while ($registro = mysqli_fetch_assoc($resultado)) {
+            $imc = calcularImc($registro['peso'], $registro['altura']);
+            echo "<p>" . $registro['nome'] . " " . $registro['sobrenome'] . " - IMC: <strong>" . $imc . "</strong></p>";
+        }
+    } else {
+        echo "<p>Nenhuma pessoa encontrada.</p>";
+    }
+}
+
+//funcoes peso
+
+function listarPesos(mysqli $conexao): void
+{
+
+    $comandoSQL = "SELECT * from pessoas";
+    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+
+
+    if (mysqli_num_rows($retornoBanco) > 0): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Peso</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($registro = mysqli_fetch_array($retornoBanco)): ?>
+
+                    <tr>
+                        <td><?= $registro['nome'] ?></td>
+                        <td><?= $registro['sobrenome'] ?></td>
+                        <td><?= $registro['peso'] ?> kg</td>
+                    </tr>
+
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+
+
+
+    <?php else: ?>
+        <p>Nenhum resultado encontrado.</p>
+    <?php endif;
+}
+
+function menorPeso(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, peso FROM pessoas ORDER BY peso ASC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>O menor peso é: <strong>" . $registro['peso'] . "</strong> kg, pertencente a <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>.</p>";
+    } else {
+        echo "<p>Nenhum peso encontrado.</p>";
+    }
+}
+
+function maiorPeso(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, peso FROM pessoas ORDER BY peso DESC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>O maior peso é: <strong>" . $registro['peso'] . "</strong> kg, pertencente a <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>.</p>";
+    } else {
+        echo "<p>Nenhum peso encontrado.</p>";
+    }
+}
+
+function pesoMedio(mysqli $conexao): void
+{
+    $sql = "SELECT peso FROM pessoas";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    $totalPeso = 0;
+    $quantidadePessoas = contParticipantes($conexao);
+
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+        $totalPeso += $registro['peso'];
+    }
+
+    if ($quantidadePessoas > 0) {
+        $pesoMedio = round($totalPeso / $quantidadePessoas, 2);
+        echo "<p>O peso médio dos participantes é: <strong>" . $pesoMedio . "</strong> kg.</p>";
+    } else {
+        echo "<p>Nenhum participante encontrado para calcular o peso médio.</p>";
+    }
+}
+
+function pessoasFora(mysqli $conexao): void{
+
+    $comandoSQL = "SELECT * from pessoas";
+    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $quilosPendentes = 0;
+    
+    if (mysqli_num_rows($retornoBanco) > 0): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Peso</th>
+                    <th>Altura</th>
+                    <th>IMC</th>
+                    <th>Quilos para atingir peso ideal</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                <?php while ($registro = mysqli_fetch_array($retornoBanco)):
+                    $imc = calcularImc($registro['peso'], $registro['altura']);
+                    
+                    if ($imc < 18.5 || $imc > 25): 
+                    if($imc < 18.5){
+                        $quilosPendentes = round(18.5 * ($registro['altura'] * $registro['altura']) - $registro['peso'], 2);
+                        
+                    }else{
+                        $quilosPendentes = round($registro['peso'] - 25 * ($registro['altura'] * $registro['altura']), 2);
+                    }
+                    
+                    ?>
+
+                    
+                    
+                    <tr>
+                        <td><?= $registro['nome'] ?></td>
+                        <td><?= $registro['sobrenome'] ?></td>
+                        <td><?= $registro['peso'] ?> kg</td>
+                        <td><?= $registro['altura'] ?> m</td>
+                        <td><?= $imc ?></td>
+                        <td><?= $quilosPendentes ?></td>
+                    </tr>
+                        
+                <?php endif; endwhile; ?>
+            </tbody>
+        </table> 
+
+    <?php else: ?>
+        <p>Nenhum resultado encontrado.</p>
+    <?php endif;
+}
+

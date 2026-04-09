@@ -37,6 +37,14 @@ $resultado = mysqli_query($auxConectar, $sql);
 
     <h2>Pessoas acima da idade média</h2>
     <?php acimaIdadeMedia($auxConectar); ?>
+
+    <h2>Pessoas abaixo da idade média</h2>
+    <?php abaixoIdadeMedia($auxConectar); ?>
+
+    <h2> Os nomes e o IMC das três maiores idades</h2>
+    <?php nomesEIMC3MaioresIdades($auxConectar); ?>
     
+    <h2> Os nomes e o IMC das cinco menores idades</h2>
+    <?php nomesEIMC5MenoresIdades($auxConectar); ?>
 </body>
 </html>

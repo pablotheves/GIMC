@@ -34,7 +34,6 @@ $resultado = mysqli_query($auxConectar, $sql);
             </tr>
         </thead>
         <?php
-        //funcao p mostrar dados classificados
         while ($registro = mysqli_fetch_assoc($resultado)) {
             $valorImc = calcularImc($registro['peso'], $registro['altura']);
 
