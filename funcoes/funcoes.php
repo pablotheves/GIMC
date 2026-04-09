@@ -96,9 +96,9 @@ function listarPessoas(mysqli $conexao): void
                         <td><?= $registro['peso'] ?> kg</td>
                         <td><?= $registro['altura'] ?> m</td>
                         <td>
-                            <a href="?acao=excluir&id=<?= $registro['idpessoa'] ?>"]
-                            onclick="return confirm('Tem certeza que deseja excluir esta pessoa?')">
-                            Excluir </a>
+                            <a href="?acao=excluir&id=<?= $registro['idpessoa'] ?>" ]
+                                onclick="return confirm('Tem certeza que deseja excluir esta pessoa?')">
+                                Excluir </a>
                         </td>
                         <td>
                             <a href="alterar-dados.php?id=<?= $registro['idpessoa'] ?>">
@@ -109,10 +109,10 @@ function listarPessoas(mysqli $conexao): void
                     <?php
 
                 endwhile; ?>
-                
+
             </tbody>
         </table>
-        
+
     <?php else: ?>
         <p>Nenhum resultado encontrado.</p>
     <?php endif;
@@ -123,9 +123,8 @@ function listarPessoas(mysqli $conexao): void
 
 
 
-//Dados IMC
+//funcoes imc
 
-//Qual o IMC de cada participante?
 
 function calcularImc(float $peso, float $altura): float
 {
@@ -185,6 +184,7 @@ function listarImcs(mysqli $conexao): void
 }
 
 
+
 function imcMedio(mysqli $conexao): void
 {
     $sql = "SELECT peso, altura FROM pessoas";
@@ -242,4 +242,145 @@ function classificarGrauObesidade(float $imc): array
     }
 }
 
+
+
+//funcoes idade
+function listarIdades(mysqli $conexao): void
+{
+
+    $comandoSQL = "SELECT * from pessoas";
+    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+
+
+    if (mysqli_num_rows($retornoBanco) > 0): ?>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Sobrenome</th>
+                    <th>Idade</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php while ($registro = mysqli_fetch_array($retornoBanco)): ?>
+
+                    <tr>
+                        <td><?= $registro['nome'] ?></td>
+                        <td><?= $registro['sobrenome'] ?></td>
+                        <td><?= $registro['idade'] ?> anos</td>
+                    </tr>
+
+                <?php endwhile; ?>
+            </tbody>
+        </table>
+
+
+
+    <?php else: ?>
+        <p>Nenhum resultado encontrado.</p>
+    <?php endif;
+}
+
+function maiorIdade(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade DESC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>A idade mais velha é: <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    } else {
+        echo "<p>Nenhuma idade encontrada.</p>";
+    }
+}
+
+function pessoaMaisVelha(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade DESC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>A pessoa mais velha é: <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>, com <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    } else {
+        echo "<p>Nenhuma pessoa encontrada.</p>";
+    }
+}
+
+function menorIdade(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade ASC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>A menor idade é: <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    } else {
+        echo "<p>Nenhuma idade encontrada.</p>";
+    }
+}
+
+function nomeEAlturaPessoaMaisNova(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, altura FROM pessoas ORDER BY idade ASC LIMIT 1";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    if (mysqli_num_rows($resultado) > 0) {
+        $registro = mysqli_fetch_assoc($resultado);
+        echo "<p>A pessoa mais nova é: <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>, com altura de <strong>" . $registro['altura'] . "</strong> metros.</p>";
+    } else {
+        echo "<p>Nenhuma pessoa encontrada.</p>";
+    }
+}
+
+function idadeMedia(mysqli $conexao): void
+{
+    $sql = "SELECT idade FROM pessoas";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    $totalIdade = 0;
+    $quantidadePessoas = contParticipantes($conexao);
+
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+        $totalIdade += $registro['idade'];
+    }
+
+    if ($quantidadePessoas > 0) {
+        $idadeMedia = round($totalIdade / $quantidadePessoas, 2);
+        echo "<p>A idade média do grupo é: <strong>" . $idadeMedia . "</strong> anos.</p>";
+    } else {
+        echo "<p>Nenhum participante encontrado para calcular a idade média.</p>";
+    }
+}
+
+function acimaIdadeMedia(mysqli $conexao): void
+{
+    $sql = "SELECT nome, sobrenome, idade FROM pessoas";
+    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+
+    $pessoas = [];
+    $somaIdades = 0;
+
+    // Armazenamos todos os dados da pessoa, não apenas a idade
+    while ($registro = mysqli_fetch_assoc($resultado)) {
+        $pessoas[] = $registro;
+        $somaIdades += $registro['idade'];
+    }
+
+    $totalPessoas = count($pessoas);
+    echo "<p>total de pessoas acima: <strong>" . $totalPessoas . "</strong>.</p>";
+
+    if ($totalPessoas > 0) {
+        $idadeMedia = round($somaIdades / $totalPessoas, 2);
+
+        foreach ($pessoas as $pessoa) {
+            if ($pessoa['idade'] > $idadeMedia) {
+                echo $pessoa['nome'] . " " . $pessoa['sobrenome'] . " - " . $pessoa['idade'] . " anos</li>";
+            }
+        }
+        echo "</ul>";
+    } else {
+        echo "<p>Nenhum participante encontrado para calcular a idade média.</p>";
+    }
+}
 ?>
