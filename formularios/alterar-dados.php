@@ -56,7 +56,7 @@
 
             <label for="idade">Idade:</label>
             <input type="number" id="idade" name="containerIdade"
-                value="<?= $pessoa['idade'] ?? '' ?>" required> required>
+                value="<?= $pessoa['idade'] ?? '' ?>" required>
             <br>
 
             <label for="peso">Peso:</label>
