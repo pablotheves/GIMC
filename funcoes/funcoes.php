@@ -69,7 +69,6 @@ function listarPessoas(mysqli $conexao): void
         excluirPessoa($conexao, $id);
     }
 
-
     $comandoSQL = "SELECT * from pessoas";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
 
@@ -118,11 +117,6 @@ function listarPessoas(mysqli $conexao): void
     <?php endif;
 }
 
-
-
-
-
-
 //Dados IMC
 
 //Qual o IMC de cada participante?
@@ -139,7 +133,6 @@ function contParticipantes(mysqli $conexao): int
     $registro = mysqli_fetch_assoc($resultado);
     return $registro['total'];
 }
-
 
 function listarImcs(mysqli $conexao): void
 {
@@ -183,7 +176,6 @@ function listarImcs(mysqli $conexao): void
         <p>Nenhum resultado encontrado.</p>
     <?php endif;
 }
-
 
 function imcMedio(mysqli $conexao): void
 {
