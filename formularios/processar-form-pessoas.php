@@ -2,6 +2,8 @@
 
 include "../funcoes/funcoes.php";
 
+$id = $_POST['id'] ?? null;
+
 $nomeRecebido = $_POST['containerNome'];
 $SobrenomeRecebido = $_POST['containerSobrenome'];
 $IdadeRecebido = $_POST['containerIdade'];
@@ -10,16 +12,49 @@ $AlturaRecebido = $_POST['containerAltura'];
 
 $auxConectar = conectar();
 
-$retornoInserir=inserirPessoa($auxConectar,$nomeRecebido,$SobrenomeRecebido,$IdadeRecebido,$PesoRecebido,$AlturaRecebido);
+/*$retornoInserir=inserirPessoa($auxConectar,$nomeRecebido,$SobrenomeRecebido,$IdadeRecebido,$PesoRecebido,$AlturaRecebido);
 if($retornoInserir){
     echo 'Pessoa inserida';
 }
 else{
     echo "Não foi possivel inserir";
+}*/
+
+if ($id) {
+    // UPDATE
+    $sql = "UPDATE pessoas SET 
+        nome = '$nomeRecebido',
+        sobrenome = '$SobrenomeRecebido',
+        idade = $IdadeRecebido,
+        peso = $PesoRecebido,
+        altura = $AlturaRecebido
+    WHERE idpessoa = $id";
+
+    $retorno = mysqli_query($auxConectar, $sql);
+
+    if ($retorno) {
+        echo 'Pessoa atualizada com sucesso';
+    } else {
+        echo 'Erro ao atualizar';
+    }
+
+} else {
+    // INSERT
+    $retorno = inserirPessoa(
+        $auxConectar,
+        $nomeRecebido,
+        $SobrenomeRecebido,
+        $IdadeRecebido,
+        $PesoRecebido,
+        $AlturaRecebido
+    );
+
+    if ($retorno) {
+        echo 'Pessoa inserida';
+    } else {
+        echo "Não foi possível inserir";
+    }
 }
-
-
-
 
 
 ?>

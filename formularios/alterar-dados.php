@@ -6,8 +6,7 @@
     $sql = "SELECT * FROM pessoas";
     $resultado = mysqli_query($auxConectar, $sql);
 
-
-    id = $_GET['id'] ?? null;
+    $id = $_GET['id'] ?? null;
 
     $pessoa = null;
 
