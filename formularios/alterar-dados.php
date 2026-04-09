@@ -71,6 +71,7 @@
             
             <div class="button-area">
                 <button type="submit" class="btn-alterar">Alterar</button>
+                
             </div>
         </form>
     </main>
