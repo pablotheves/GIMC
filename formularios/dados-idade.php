@@ -46,5 +46,8 @@ $resultado = mysqli_query($auxConectar, $sql);
     
     <h2> Os nomes e o IMC das cinco menores idades</h2>
     <?php nomesEIMC5MenoresIdades($auxConectar); ?>
+
+    
+        <a href="painel-administrativo.html" class="btn-menu">Voltar ao Menu</a>
 </body>
 </html>

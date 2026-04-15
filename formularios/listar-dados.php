@@ -18,9 +18,13 @@
 </head>
 <body>
     <main class="container-painel"> 
+
         <h2>Lista dos participantes</h2>
             <?php listarPessoas($auxConectar); ?>
         </table>
+
+            
+        <a href="painel-administrativo.html" class="btn-menu">Voltar ao Menu</a>
     </main>
 </body>
 </html>

@@ -47,9 +47,13 @@ $resultado = mysqli_query($auxConectar, $sql);
             echo "</tr>";
         }
         ?>
+
     </table>
     <h2>IMC MÉDIO</h2>
     <?php imcMedio($auxConectar); ?>
+
+    
+        <a href="painel-administrativo.html" class="btn-menu">Voltar ao Menu</a>
 
 </body>
 

@@ -8,6 +8,9 @@ body {
 header h1 {
     font-weight: normal;
     margin-top: 20px;
+    background-color: #e6e6e6;
+    padding: 40px;
+    font-size: 1.1rem;
 }
 
 hr {
@@ -15,64 +18,73 @@ hr {
     border-top: 1px solid #999;
 }
 
-/* Container para centralizar os botões */
 .container-painel {
     display: flex;
     flex-direction: column;
-    /* Alinha um embaixo do outro */
     align-items: center;
     gap: 20px;
-    /* Espaço entre os botões */
     margin-top: 40px;
     margin-bottom: 40px;
 }
 
-/* Estilização dos Botões (Links) */
-.btn-menu {
+.btn-menu{
     background-color: #134e5e;
-    /* Verde petróleo da imagem */
     color: white;
     text-decoration: none;
-    /* Remove o sublinhado do link */
-    font-size: 1.5rem;
     font-weight: bold;
-    padding: 15px;
-    width: 400px;
-    /* Largura fixa para ficarem iguais */
-    border: 2px solid #000;
+    padding: 5px 12px;
+    border: 1px solid #000;
     box-sizing: border-box;
     transition: background 0.3s;
 }
 
 .btn-menu:hover {
-    background-color: #1a6b81;
-    /* Fica um pouco mais claro ao passar o mouse */
+    background-color: #1f7a94;
 }
 
-/* Rodapé igual ao anterior */
+.button-area {
+    grid-column: span 2; 
+    text-align: center;
+    margin-top: 20px;
+}
+
+footer {
+    margin-top: 30px;
+}
+
 .rodape-conteudo {
-    background-color: #e6e6e6;
-    padding: 40px;
-    font-size: 1.1rem;
+    background-color: #e6e6e6; /* Cor do rodapé [cite: 106] */
+    padding: 20px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
 }
 
 table {
-    width: 80%;
+    width: 50%; 
     border-collapse: collapse;
     margin: 20px auto;
-    font-family: Arial;
-
+    background-color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+    border: 1px solid #000000;
 }
 
-td {
-    padding: 10px;
-    text-align: center;
-    border: 1px solid #ddd;
+tr:nth-child(even) {
+    background-color: #f9f9f9;
 }
 
 th {
-    background-color: #eee;
-    border: 1px solid #ddd;
+    background-color: #e9e9e9; 
+    color: #333;
+    font-weight: bold;
+    padding: 12px;
+    border-bottom: 2px solid #ccc;
+}
+
+td {
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd; 
+    color: #555;
 }
 
 .cuidado{
@@ -89,24 +101,46 @@ th {
 }
 
 .form-grid {
-    display: flex;
-    flex-direction: column; 
-    align-items: center;  
-    gap: 10px;            
+    display: grid;
+    grid-template-columns: auto 300px;
+    gap: 15px 10px;
+    justify-content: center;
+    align-items: center;
+    margin: 30px auto;
 }
 
-/* Estilização das Labels e Inputs */
+.form-grid br {
+    display: none;
+}
+
 .form-grid label {
-    font-weight: bold;
-    margin-top: 10px;
-    width: 100%;
-    text-align: left; 
+    text-align: right;
+    font-size: 1.4rem;
+    font-weight: normal;
+    margin: 0;
 }
 
 .form-grid input {
-    width: 100%;          
-    padding: 10px;
-    border: 1px solid #ccc;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #333;
+    font-size: 1.2rem;
+    box-sizing: border-box;
+}
+
+.btn-registrar {
+    background-color: #8a2be2;
+    color: white;
+    border: none;
+    padding: 10px 40px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
     border-radius: 4px;
-    box-sizing: border-box; 
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+}
+.btn-registrar:hover {
+    background-color: #7a1fd1;
+    
+    box-shadow: 0px;    
 }
