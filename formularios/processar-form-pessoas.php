@@ -29,7 +29,7 @@ if ($id) {
         echo 'Pessoa atualizada com sucesso';
 
         // LOG 
-    $mensagem = "ATUALIZOU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
+    $mensagem = "ATUALIZOU -> Nome: $nomeRecebido | Sobrenome: $SobrenomeRecebido | Idade: $IdadeRecebido | Peso: $PesoRecebido | Altura: $AlturaRecebido | "
                 . date("d/m/Y H:i:s") . "\n";
 
     file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);

@@ -1,0 +1,6 @@
+INSERIU -> Nome: asa | Sobrenome: qeq | Idade: 40 | Peso: 70 | Altura: 1.5 | 09/04/2026 03:46:32
+ATUALIZOU -> Nome:  | Sobrenome:  | Idade:  | Peso:  | Altura:  | 09/04/2026 03:47:06
+INSERIU -> Nome: oi | Sobrenome: dae | Idade: 10 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:52:09
+ATUALIZOU -> Nome:  | Sobrenome:  | Idade:  | Peso:  | Altura:  | 09/04/2026 03:52:28
+ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 19 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:22
+ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 23 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:46

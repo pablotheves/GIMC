@@ -46,32 +46,63 @@ function mostrarPessoas(mysqli $conexao): void
 
 function inserirPessoa(mysqli $conexao, string $nome, string $sobrenome, int $idade, float $peso, float $altura): bool
 {
-    $comandoSQL = "insert into pessoas (nome,sobrenome,idade,peso,altura) values ('$nome','$sobrenome',$idade,$peso,$altura)";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
-    return $retornoBanco;
-
-    // LOG 
-    $mensagem = "INSERIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
-                . date("d/m/Y H:i:s") . "\n";
-
-    file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
-
-
+    $comandoSQL = "INSERT INTO pessoas (nome, sobrenome, idade, peso, altura) VALUES (?, ?, ?, ?, ?)";
     
+    $stmt = mysqli_prepare($conexao, $comandoSQL);
+    
+    if (!$stmt) {
+        return false; // Erro na preparação
+    }
+
+    // "ssidd" indica os tipos: string, string, integer, double (float), double (float)
+    mysqli_stmt_bind_param($stmt, "ssidd", $nome, $sobrenome, $idade, $peso, $altura);
+    
+    $executou = mysqli_stmt_execute($stmt);
+
+    // 2. O Log deve vir ANTES do return
+    if ($executou) {
+        $dataHora = date("d/m/Y H:i:s");
+        $mensagem = "INSERIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | $dataHora\n";
+        
+        // Verifica se a pasta de logs existe antes de gravar (opcional, mas recomendado)
+        @file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
+    }
+
+    mysqli_stmt_close($stmt);
+
+    return $executou; // 3. Agora o return encerra a função corretamente
+
+
 }
 
 function excluirPessoa(mysqli $conexao, int $idpessoa): bool
 {
     $comandoSQL = "delete from pessoas where idpessoa = '$idpessoa'";
     $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
-    return $retornoBanco;
-
-
+    
+    $sqlBusca = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas WHERE idpessoa = ?";
+    $stmtBusca = mysqli_prepare($conexao, $sqlBusca);
+    mysqli_stmt_bind_param($stmtBusca, "i", $idpessoa);
+    mysqli_stmt_execute($stmtBusca);
+    $resultado = mysqli_stmt_get_result($stmtBusca);
+    
+    // Aqui nós "declaramos" as variáveis pegando o que veio do banco
+    if ($dados = mysqli_fetch_assoc($resultado)) {
+        $nome = $dados['nome'];
+        $sobrenome = $dados['sobrenome'];
+        $idade = $dados['idade'];
+        $peso = $dados['peso'];
+        $altura = $dados['altura'];
+    } else {
+        return false;
+    }
+    
     // LOG direto 
     $mensagem = "EXCLUIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
                 . date("d/m/Y H:i:s") . "\n";
 
     file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
+    return $retornoBanco;
 }
 
 
