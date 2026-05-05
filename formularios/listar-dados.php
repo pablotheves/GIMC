@@ -5,7 +5,10 @@
     $auxConectar = conectar();
 
     $sql = "SELECT * FROM pessoas";
-    $resultado = mysqli_query($auxConectar, $sql);
+    $stmt = $auxConectar->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $stmt = null;
 ?>
 
 <!DOCTYPE html>

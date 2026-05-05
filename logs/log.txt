@@ -4,3 +4,4 @@ INSERIU -> Nome: oi | Sobrenome: dae | Idade: 10 | Peso: 50 | Altura: 1.7 | 09/0
 ATUALIZOU -> Nome:  | Sobrenome:  | Idade:  | Peso:  | Altura:  | 09/04/2026 03:52:28
 ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 19 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:22
 ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 23 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:46
+INSERIU -> Nome: Tiago | Sobrenome: Gonçalves | Idade: 20 | Peso: 70 | Altura: 1.7 | 16/04/2026 02:22:06

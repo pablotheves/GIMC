@@ -1,35 +1,36 @@
 <?php
 
 //banco de dados
-function conectar(): mysqli
+function conectar(): PDO
 {
-    // Informação da Conexão
     $localServidor = "localhost";
     $usuario = "root";
     $senha = "";
     $nomeBaseDados = "imc";
 
-    $conexao = mysqli_connect($localServidor, $usuario, $senha, $nomeBaseDados);
+    try {
+        $conexao = new PDO("mysql:host=$localServidor;dbname=$nomeBaseDados", $usuario, $senha);
+        
+        $conexao->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Verificando a Conexao com a Base de Dados.
-    if (!$conexao) {
-        die("Conexão falhou: " . mysqli_connect_error());
+        return $conexao;
+    } catch (PDOException $e) {
+        die("Conexão falhou: " . $e->getMessage());
     }
-
-    // echo "Conectado com sucesso!!!";
-    return $conexao;
 }
 
-function mostrarPessoas(mysqli $conexao): void
+function mostrarPessoas(PDO $conexao): void
 {
 
     $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($comandoSQL); 
+    $stmt->execute(); 
+    $lista = $stmt->fetchAll(PDO::FETCH_ASSOC); 
 
-    if (mysqli_num_rows($retornoBanco) > 0) {
+    if (count($lista) > 0) {
         echo "ID pessoa - Nome - Sobrenome - Idade - Peso - Altura<br>";
 
-        while ($registro = mysqli_fetch_array($retornoBanco)) {
+        foreach ($lista as $registro) {
             echo $registro['idpessoa'] .
                 " " . $registro['nome'] .
                 " " . $registro['sobrenome'] .
@@ -40,73 +41,85 @@ function mostrarPessoas(mysqli $conexao): void
     } else {
         echo "Nenhum resultado.";
     }
-
+    $stmt = null;
     return;
 }
 
-function inserirPessoa(mysqli $conexao, string $nome, string $sobrenome, int $idade, float $peso, float $altura): bool
+function inserirPessoa(PDO $conexao, string $nome, string $sobrenome, int $idade, float $peso, float $altura): bool
 {
     $comandoSQL = "INSERT INTO pessoas (nome, sobrenome, idade, peso, altura) VALUES (?, ?, ?, ?, ?)";
     
-    $stmt = mysqli_prepare($conexao, $comandoSQL);
+    $stmt = $conexao->prepare($comandoSQL);
+
     
     if (!$stmt) {
-        return false; // Erro na preparação
+        return false; 
     }
 
-    // "ssidd" indica os tipos: string, string, integer, double (float), double (float)
-    mysqli_stmt_bind_param($stmt, "ssidd", $nome, $sobrenome, $idade, $peso, $altura);
+    $stmt->bindParam(1, $nome, PDO::PARAM_STR);
+    $stmt->bindParam(2, $sobrenome, PDO::PARAM_STR);
+    $stmt->bindParam(3, $idade, PDO::PARAM_INT);
+    $stmt->bindParam(4, $peso, PDO::PARAM_STR);
+    $stmt->bindParam(5, $altura, PDO::PARAM_STR);
     
-    $executou = mysqli_stmt_execute($stmt);
+    $executou = $stmt->execute();
 
-    // 2. O Log deve vir ANTES do return
     if ($executou) {
         $dataHora = date("d/m/Y H:i:s");
         $mensagem = "INSERIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | $dataHora\n";
         
-        // Verifica se a pasta de logs existe antes de gravar (opcional, mas recomendado)
         @file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
     }
 
-    mysqli_stmt_close($stmt);
+    $stmt = null;
 
-    return $executou; // 3. Agora o return encerra a função corretamente
+    return $executou; 
 
 
 }
 
-function excluirPessoa(mysqli $conexao, int $idpessoa): bool
+function excluirPessoa(PDO $conexao, int $idpessoa): bool
 {
-    $comandoSQL = "delete from pessoas where idpessoa = '$idpessoa'";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
-    
     $sqlBusca = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas WHERE idpessoa = ?";
-    $stmtBusca = mysqli_prepare($conexao, $sqlBusca);
-    mysqli_stmt_bind_param($stmtBusca, "i", $idpessoa);
-    mysqli_stmt_execute($stmtBusca);
-    $resultado = mysqli_stmt_get_result($stmtBusca);
+    $stmtBusca = $conexao->prepare($sqlBusca);
+    $stmtBusca->bindParam(1, $idpessoa, PDO::PARAM_INT);
+    $stmtBusca->execute();
     
-    // Aqui nós "declaramos" as variáveis pegando o que veio do banco
-    if ($dados = mysqli_fetch_assoc($resultado)) {
-        $nome = $dados['nome'];
-        $sobrenome = $dados['sobrenome'];
-        $idade = $dados['idade'];
-        $peso = $dados['peso'];
-        $altura = $dados['altura'];
-    } else {
-        return false;
-    }
-    
-    // LOG direto 
-    $mensagem = "EXCLUIU -> Nome: $nome | Sobrenome: $sobrenome | Idade: $idade | Peso: $peso | Altura: $altura | "
-                . date("d/m/Y H:i:s") . "\n";
+    $dados = $stmtBusca->fetch(PDO::FETCH_ASSOC);
 
-    file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
-    return $retornoBanco;
+    if (!$dados) {
+        return false; // Pessoa não encontrada
+    }
+
+    $sqlDelete = "DELETE FROM pessoas WHERE idpessoa = ?";
+    $stmtDelete = $conexao->prepare($sqlDelete);
+    $stmtDelete->bindParam(1, $idpessoa, PDO::PARAM_INT);
+    
+    if ($stmtDelete->execute()) {
+        if ($stmtDelete->rowCount() > 0) {
+            
+            // 3. Gravar Log[cite: 2]
+            $mensagem = "EXCLUIU -> Nome: {$dados['nome']} | Sobrenome: {$dados['sobrenome']} | " .
+                        "Idade: {$dados['idade']} | Peso: {$dados['peso']} | Altura: {$dados['altura']} | " .
+                        date("d/m/Y H:i:s") . "\n";
+
+            file_put_contents("../logs/log.txt", $mensagem, FILE_APPEND);
+            
+            // Fechar os statements
+            $stmtBusca = null;
+            $stmtDelete = null;
+            
+            return true;
+        }
+    }
+
+    $stmtBusca = null;
+    $stmtDelete = null;
+    return false;
 }
 
 
-function listarPessoas(mysqli $conexao): void
+function listarPessoas(PDO $conexao): void
 {
 
     if (isset($_GET['acao']) && $_GET['acao'] == 'excluir') {
@@ -114,11 +127,13 @@ function listarPessoas(mysqli $conexao): void
         excluirPessoa($conexao, $id);
     }
 
+    $comandoSQL = "SELECT * FROM pessoas";
+    $stmt = $conexao->prepare($comandoSQL);
+    $stmt->execute();
 
-    $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $listaPessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($retornoBanco) > 0): ?>
+    if (count($listaPessoas) > 0): ?>
         <table>
             <thead>
                 <tr>
@@ -133,7 +148,7 @@ function listarPessoas(mysqli $conexao): void
             <tbody>
                 <?php
 
-                while ($registro = mysqli_fetch_array($retornoBanco)):
+                foreach($listaPessoas as $registro):
                     ?>
                     <tr>
                         <td><?= $registro['nome'] ?></td>
@@ -152,8 +167,7 @@ function listarPessoas(mysqli $conexao): void
                         </td>
                     </tr>
                     <?php
-
-                endwhile; ?>
+                endforeach; ?>
 
             </tbody>
         </table>
@@ -161,37 +175,33 @@ function listarPessoas(mysqli $conexao): void
     <?php else: ?>
         <p>Nenhum resultado encontrado.</p>
     <?php endif;
+    $stmt = null;
 }
 
-
-
-
-
-
 //funcoes imc
-
-
 function calcularImc(float $peso, float $altura): float
 {
     return round($peso / ($altura * $altura), 2);
 }
 
-function contParticipantes(mysqli $conexao): int
+function contParticipantes(PDO $conexao): int
 {
     $sql = "SELECT COUNT(*) AS total FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
-    $registro = mysqli_fetch_assoc($resultado);
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $registro = $stmt->fetch(PDO::FETCH_ASSOC);
     return $registro['total'];
 }
 
-
-function listarImcs(mysqli $conexao): void
+function listarImcs(PDO $conexao): void
 {
 
-    $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $comandoSQL = "SELECT * FROM pessoas";
+    $stmt = $conexao->prepare($comandoSQL);
+    $stmt->execute();
+    $listaPessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($retornoBanco) > 0): ?>
+    if (count($listaPessoas) > 0): ?>
         <table>
             <thead>
                 <tr>
@@ -203,10 +213,8 @@ function listarImcs(mysqli $conexao): void
                 </tr>
             </thead>
             <tbody>
-                <?php while ($registro = mysqli_fetch_array($retornoBanco)):
-                    $imc = calcularImc($registro['peso'], $registro['altura']);
-                    ?>
-
+                <?php foreach ($listaPessoas as $registro): ?>
+                    <?php $imc = calcularImc($registro['peso'], $registro['altura']); ?>
                     <tr>
                         <td><?= $registro['nome'] ?></td>
                         <td><?= $registro['sobrenome'] ?></td>
@@ -215,7 +223,7 @@ function listarImcs(mysqli $conexao): void
                         <td><?= $imc ?></td>
                     </tr>
 
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
 
@@ -228,15 +236,17 @@ function listarImcs(mysqli $conexao): void
 
 
 
-function imcMedio(mysqli $conexao): void
+function imcMedio(PDO $conexao): void
 {
     $sql = "SELECT peso, altura FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $totalImc = 0;
     $quantidadePessoas = contParticipantes($conexao);
 
-    while ($registro = mysqli_fetch_assoc($resultado)) {
+    foreach ($resultado as $registro) {
         $imc = calcularImc($registro['peso'], $registro['altura']);
         $totalImc += $imc;
     }
@@ -288,14 +298,15 @@ function classificarGrauObesidade(float $imc): array
 
 
 //funcoes idade
-function listarIdades(mysqli $conexao): void
+function listarIdades(PDO $conexao): void
 {
 
     $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($comandoSQL);
+    $stmt->execute();
+    $listaPessoas = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-
-    if (mysqli_num_rows($retornoBanco) > 0): ?>
+    if (count($listaPessoas) > 0): ?>
         <table>
             <thead>
                 <tr>
@@ -305,7 +316,7 @@ function listarIdades(mysqli $conexao): void
                 </tr>
             </thead>
             <tbody>
-                <?php while ($registro = mysqli_fetch_array($retornoBanco)): ?>
+                <?php foreach ($listaPessoas as $registro): ?>
 
                     <tr>
                         <td><?= $registro['nome'] ?></td>
@@ -313,7 +324,7 @@ function listarIdades(mysqli $conexao): void
                         <td><?= $registro['idade'] ?> anos</td>
                     </tr>
 
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
 
@@ -324,67 +335,73 @@ function listarIdades(mysqli $conexao): void
     <?php endif;
 }
 
-function maiorIdade(mysqli $conexao): void
+function maiorIdade(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade DESC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
-        echo "<p>A idade mais velha é: <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    if ($resultado) {
+        echo "<p>A idade mais velha é: <strong>" . $resultado['idade'] . "</strong> anos.</p>";
     } else {
         echo "<p>Nenhuma idade encontrada.</p>";
     }
 }
 
-function pessoaMaisVelha(mysqli $conexao): void
+function pessoaMaisVelha(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade DESC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
-        echo "<p>A pessoa mais velha é: <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>, com <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    if ($resultado) {
+        echo "<p>A pessoa mais velha é: <strong>" . $resultado['nome'] . " " . $resultado['sobrenome'] . "</strong>, com <strong>" . $resultado['idade'] . "</strong> anos.</p>";
     } else {
         echo "<p>Nenhuma pessoa encontrada.</p>";
     }
 }
 
-function menorIdade(mysqli $conexao): void
+function menorIdade(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade FROM pessoas ORDER BY idade ASC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
-        echo "<p>A menor idade é: <strong>" . $registro['idade'] . "</strong> anos.</p>";
+    if ($resultado) {
+        echo "<p>A menor idade é: <strong>" . $resultado['idade'] . "</strong> anos.</p>";
     } else {
         echo "<p>Nenhuma idade encontrada.</p>";
     }
 }
 
-function nomeEAlturaPessoaMaisNova(mysqli $conexao): void
+function nomeEAlturaPessoaMaisNova(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, altura FROM pessoas ORDER BY idade ASC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
-        echo "<p>A pessoa mais nova é: <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>, com altura de <strong>" . $registro['altura'] . "</strong> metros.</p>";
+    if ($resultado) {
+        echo "<p>A pessoa mais nova é: <strong>" . $resultado['nome'] . " " . $resultado['sobrenome'] . "</strong>, com altura de <strong>" . $resultado['altura'] . "</strong> metros.</p>";
     } else {
         echo "<p>Nenhuma pessoa encontrada.</p>";
     }
 }
 
-function idadeMedia(mysqli $conexao): void
+function idadeMedia(PDO $conexao): void
 {
     $sql = "SELECT idade FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $totalIdade = 0;
-    $quantidadePessoas = contParticipantes($conexao);
+    $quantidadePessoas = count($resultado);
 
-    while ($registro = mysqli_fetch_assoc($resultado)) {
+    foreach ($resultado as $registro) {
         $totalIdade += $registro['idade'];
     }
 
@@ -396,16 +413,18 @@ function idadeMedia(mysqli $conexao): void
     }
 }
 
-function acimaIdadeMedia(mysqli $conexao): void
+function acimaIdadeMedia(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $pessoas = [];
     $somaIdades = 0;
 
     // Armazenamos todos os dados da pessoa, não apenas a idade
-    while ($registro = mysqli_fetch_assoc($resultado)) {
+    foreach ($resultado as $registro) {
         $pessoas[] = $registro;
         $somaIdades += $registro['idade'];
     }
@@ -418,25 +437,28 @@ function acimaIdadeMedia(mysqli $conexao): void
 
         foreach ($pessoas as $pessoa) {
             if ($pessoa['idade'] > $idadeMedia) {
-                echo $pessoa['nome'] . " " . $pessoa['sobrenome'] . " - " . $pessoa['idade'] . " anos</li>";
+                echo $pessoa['nome'] . " " . $pessoa['sobrenome'] . " - " . $pessoa['idade'] . " anos
+                </br></li>";
             }
         }
         echo "</ul>";
     } else {
         echo "<p>Nenhum participante encontrado para calcular a idade média.</p>";
-    }
+    }  
 }
 
-function abaixoIdadeMedia(mysqli $conexao): void
+function abaixoIdadeMedia(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $pessoas = [];
     $somaIdades = 0;
 
     // Armazenamos todos os dados da pessoa, não apenas a idade
-    while ($registro = mysqli_fetch_assoc($resultado)) {
+    foreach ($resultado as $registro) {
         $pessoas[] = $registro;
         $somaIdades += $registro['idade'];
     }
@@ -446,13 +468,15 @@ function abaixoIdadeMedia(mysqli $conexao): void
 
 }
 
-function nomesEIMC3MaioresIdades(mysqli $conexao): void
+function nomesEIMC3MaioresIdades(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas ORDER BY idade DESC LIMIT 3";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        while ($registro = mysqli_fetch_assoc($resultado)) {
+    if ($resultado) {
+        foreach ($resultado as $registro) {
             $imc = calcularImc($registro['peso'], $registro['altura']);
             echo "<p>" . $registro['nome'] . " " . $registro['sobrenome'] . " - IMC: <strong>" . $imc . "</strong></p>";
         }
@@ -461,13 +485,15 @@ function nomesEIMC3MaioresIdades(mysqli $conexao): void
     }
 }
 
-function nomesEIMC5MenoresIdades(mysqli $conexao): void
+function nomesEIMC5MenoresIdades(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, idade, peso, altura FROM pessoas ORDER BY idade ASC LIMIT 5";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        while ($registro = mysqli_fetch_assoc($resultado)) {
+    if ($resultado) {
+        foreach ($resultado as $registro) {
             $imc = calcularImc($registro['peso'], $registro['altura']);
             echo "<p>" . $registro['nome'] . " " . $registro['sobrenome'] . " - IMC: <strong>" . $imc . "</strong></p>";
         }
@@ -478,14 +504,13 @@ function nomesEIMC5MenoresIdades(mysqli $conexao): void
 
 //funcoes peso
 
-function listarPesos(mysqli $conexao): void
+function listarPesos(PDO $conexao): void
 {
+    $stmt = $conexao->prepare("SELECT * FROM pessoas");
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
-
-
-    if (mysqli_num_rows($retornoBanco) > 0): ?>
+    if ($resultado): ?>
         <table>
             <thead>
                 <tr>
@@ -495,60 +520,62 @@ function listarPesos(mysqli $conexao): void
                 </tr>
             </thead>
             <tbody>
-                <?php while ($registro = mysqli_fetch_array($retornoBanco)): ?>
-
+                <?php foreach ($resultado as $registro): ?>
                     <tr>
                         <td><?= $registro['nome'] ?></td>
                         <td><?= $registro['sobrenome'] ?></td>
                         <td><?= $registro['peso'] ?> kg</td>
                     </tr>
-
-                <?php endwhile; ?>
+                <?php endforeach; ?>
             </tbody>
         </table>
-
-
-
     <?php else: ?>
         <p>Nenhum resultado encontrado.</p>
     <?php endif;
+    $stmt = null;
 }
 
-function menorPeso(mysqli $conexao): void
+function menorPeso(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, peso FROM pessoas ORDER BY peso ASC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
+    if ($resultado) {
+        $registro = $resultado[0];
         echo "<p>O menor peso é: <strong>" . $registro['peso'] . "</strong> kg, pertencente a <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>.</p>";
     } else {
         echo "<p>Nenhum peso encontrado.</p>";
     }
 }
 
-function maiorPeso(mysqli $conexao): void
+function maiorPeso(PDO $conexao): void
 {
     $sql = "SELECT nome, sobrenome, peso FROM pessoas ORDER BY peso DESC LIMIT 1";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    if (mysqli_num_rows($resultado) > 0) {
-        $registro = mysqli_fetch_assoc($resultado);
+    if ($resultado) {
+        $registro = $resultado[0];
         echo "<p>O maior peso é: <strong>" . $registro['peso'] . "</strong> kg, pertencente a <strong>" . $registro['nome'] . " " . $registro['sobrenome'] . "</strong>.</p>";
     } else {
         echo "<p>Nenhum peso encontrado.</p>";
     }
 }
 
-function pesoMedio(mysqli $conexao): void
+function pesoMedio(PDO $conexao): void
 {
     $sql = "SELECT peso FROM pessoas";
-    $resultado = mysqli_query($conexao, $sql) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare($sql);
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $totalPeso = 0;
-    $quantidadePessoas = contParticipantes($conexao);
+    $quantidadePessoas = count($resultado);
 
-    while ($registro = mysqli_fetch_assoc($resultado)) {
+    foreach ($resultado as $registro) {
         $totalPeso += $registro['peso'];
     }
 
@@ -560,13 +587,14 @@ function pesoMedio(mysqli $conexao): void
     }
 }
 
-function pessoasFora(mysqli $conexao): void{
+function pessoasFora(PDO $conexao): void{
 
-    $comandoSQL = "SELECT * from pessoas";
-    $retornoBanco = mysqli_query($conexao, $comandoSQL) or die(mysqli_error($conexao));
+    $stmt = $conexao->prepare("SELECT * FROM pessoas");
+    $stmt->execute();
+    $resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
     $quilosPendentes = 0;
-    
-    if (mysqli_num_rows($retornoBanco) > 0): ?>
+
+    if ($resultado): ?>
         <table>
             <thead>
                 <tr>
@@ -580,7 +608,7 @@ function pessoasFora(mysqli $conexao): void{
             </thead>
             <tbody>
 
-                <?php while ($registro = mysqli_fetch_array($retornoBanco)):
+                <?php foreach ($resultado as $registro): 
                     $imc = calcularImc($registro['peso'], $registro['altura']);
                     
                     if ($imc < 18.5 || $imc > 25): 
@@ -592,9 +620,6 @@ function pessoasFora(mysqli $conexao): void{
                     }
                     
                     ?>
-
-                    
-                    
                     <tr>
                         <td><?= $registro['nome'] ?></td>
                         <td><?= $registro['sobrenome'] ?></td>
@@ -604,7 +629,8 @@ function pessoasFora(mysqli $conexao): void{
                         <td><?= $quilosPendentes ?></td>
                     </tr>
                         
-                <?php endif; endwhile; ?>
+                <?php endif;?>
+                <?php endforeach; ?>
             </tbody>
         </table> 
 
