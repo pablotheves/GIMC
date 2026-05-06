@@ -37,7 +37,7 @@ $stmt = null;
             </tr>
         </thead>
         <?php
-        while ($registro = mysqli_fetch_assoc($resultado)) {
+        foreach($resultado as $registro) {
             $valorImc = calcularImc($registro['peso'], $registro['altura']);
 
             $dadosClassificacao = classificarGrauObesidade($valorImc);

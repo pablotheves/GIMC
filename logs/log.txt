@@ -5,3 +5,6 @@ ATUALIZOU -> Nome:  | Sobrenome:  | Idade:  | Peso:  | Altura:  | 09/04/2026 03:
 ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 19 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:22
 ATUALIZOU -> Nome: oi | Sobrenome: dae | Idade: 23 | Peso: 50 | Altura: 1.7 | 09/04/2026 03:53:46
 INSERIU -> Nome: Tiago | Sobrenome: Gonçalves | Idade: 20 | Peso: 70 | Altura: 1.7 | 16/04/2026 02:22:06
+EXCLUIU -> Nome: Aline | Sobrenome: Batista | Idade: 28 | Peso: 56 | Altura: 1.59 | 06/05/2026 00:31:44
+ATUALIZOU -> Nome: Felipe | Sobrenome: Moura | Idade: 36 | Peso: 88 | Altura: 1.79 | 06/05/2026 00:41:59
+ATUALIZOU -> Nome: Felipe | Sobrenome: Moura | Idade: 36 | Peso: 88 | Altura: 1.99 | 06/05/2026 00:42:22

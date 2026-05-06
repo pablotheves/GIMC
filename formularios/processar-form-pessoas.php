@@ -23,8 +23,8 @@ if ($id) {
         altura = $AlturaRecebido
     WHERE idpessoa = $id";
 
-    $retorno = mysqli_query($auxConectar, $sql);
-
+    $retorno = $auxConectar->query($sql);
+   
     if ($retorno) {
         echo 'Pessoa atualizada com sucesso';
 

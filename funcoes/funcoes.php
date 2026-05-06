@@ -500,6 +500,8 @@ function nomesEIMC5MenoresIdades(PDO $conexao): void
     } else {
         echo "<p>Nenhuma pessoa encontrada.</p>";
     }
+
+    
 }
 
 //funcoes peso

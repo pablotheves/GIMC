@@ -4,19 +4,24 @@ include_once "../funcoes/funcoes.php";
 $auxConectar = conectar();
 
 $sql = "SELECT * FROM pessoas";
-$resultado = mysqli_query($auxConectar, $sql);
+$stmt = $auxConectar->prepare($sql);
+$stmt->execute();
+$resultado = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 $id = $_GET['id'] ?? null;
 
 $pessoa = null;
 
 if ($id) {
-    $sql = "SELECT * FROM pessoas WHERE idpessoa = $id";
-    $resultado = mysqli_query($auxConectar, $sql);
+    $sql = "SELECT * FROM pessoas WHERE idpessoa = ?";
+    $stmt = $auxConectar->prepare($sql);
 
-    if ($resultado && mysqli_num_rows($resultado) > 0) {
-        $pessoa = mysqli_fetch_assoc($resultado);
-    }
+    $stmt->bindParam(1, $id, PDO::PARAM_INT);
+    $stmt->execute();
+
+    $pessoa = $stmt->fetch(PDO::FETCH_ASSOC);
+
+    $stmt = null;
 }
 ?>
 
